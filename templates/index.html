@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flight Delay Risk Predictor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="sky-bg">
+  <svg class="cloud cloud-1" viewBox="0 0 100 40"><ellipse cx="50" cy="24" rx="40" ry="14"/></svg>
+  <svg class="cloud cloud-2" viewBox="0 0 100 40"><ellipse cx="50" cy="24" rx="30" ry="11"/></svg>
+</div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-badge">✈ Predictive Aviation Tool</div>
+    <h1>Flight Delay Risk Predictor</h1>
+    <p class="hero-sub">Estimate your flight's delay risk before you leave for the airport — powered by 2018 US BTS flight records and a gradient-boosted model.</p>
+  </header>
+
+  <div class="steps">
+    <div class="step active" id="step-indicator-1">
+      <span class="step-num">1</span>
+      <span class="step-label">Flight details</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" id="step-indicator-2">
+      <span class="step-num">2</span>
+      <span class="step-label">Forecast</span>
+    </div>
+  </div>
+
+  <section class="card" id="form-card">
+    <div class="grid">
+      <div class="field">
+        <label for="month">Month</label>
+        <select id="month">
+          {% for m in range(1,13) %}<option value="{{m}}">{{m}}</option>{% endfor %}
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="day_of_week">Day of week</label>
+        <select id="day_of_week">
+          <option value="0">Monday</option>
+          <option value="1">Tuesday</option>
+          <option value="2">Wednesday</option>
+          <option value="3">Thursday</option>
+          <option value="4">Friday</option>
+          <option value="5">Saturday</option>
+          <option value="6">Sunday</option>
+        </select>
+      </div>
+
+      <div class="field field-wide">
+        <label for="hour">Departure hour <span class="hour-value" id="hour-value">12:00</span></label>
+        <input type="range" id="hour" min="0" max="23" value="12">
+        <div class="range-ticks"><span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>11 PM</span></div>
+      </div>
+
+      <div class="field">
+        <label for="distance">Distance (miles)</label>
+        <input type="number" id="distance" min="0" value="500">
+      </div>
+
+      <div class="field">
+        <label for="carrier">Carrier</label>
+        <select id="carrier">
+          {% for c in carriers %}<option value="{{c}}">{{carrier_names[c]}} ({{c}})</option>{% endfor %}
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="origin">Origin airport</label>
+        <select id="origin">
+          {% for a in airports %}<option value="{{a}}">{{airport_names[a]}} ({{a}})</option>{% endfor %}
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="dest">Destination airport</label>
+        <select id="dest">
+          {% for a in airports %}<option value="{{a}}">{{airport_names[a]}} ({{a}})</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="predict-btn">
+      <span>Check my flight</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </section>
+
+  <section class="card result-card hidden" id="result-card">
+    <div class="result-icon" id="result-icon">☀️</div>
+    <div class="result-status" id="result-status">—</div>
+    <div class="result-prob-wrap">
+      <div class="result-prob-bar-bg">
+        <div class="result-prob-bar" id="result-prob-bar"></div>
+      </div>
+      <div class="result-prob-text" id="result-prob-text">0%</div>
+    </div>
+    <p class="result-note">Delay probability reflects historical patterns for similar flights (month, time, route, carrier). Threshold for "delayed" is 20% predicted risk.</p>
+    <button class="btn-secondary" id="reset-btn">← Check another flight</button>
+  </section>
+
+  <footer class="footer">
+    Built with LightGBM on the 2018 US Bureau of Transportation Statistics dataset.
+  </footer>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
